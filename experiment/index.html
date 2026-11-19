@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Эксперимент «Цифровой контролёр» — онлайн-форма</title>
+<style>
+:root{--bg:#fff;--fg:#1a1a1a;--card:#f3f5f8;--ac:#0b57d0}
+@media(prefers-color-scheme:dark){:root{--bg:#161a20;--fg:#eee;--card:#222831;--ac:#8ab4f8}}
+body{font:16px/1.5 system-ui,sans-serif;background:var(--bg);color:var(--fg);max-width:760px;margin:0 auto;padding:16px}
+.card{background:var(--card);border-radius:10px;padding:12px;margin:12px 0}
+img{max-width:100%;border:1px solid #888}button,select,input{font:inherit;padding:8px;margin:4px 0}
+button{background:var(--ac);color:#fff;border:0;border-radius:6px;cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #f90}
+label{display:block;margin:6px 0}#timer{font-weight:700;font-size:1.3em}
+</style></head><body>
+<h1>Проверка документов: онлайн-форма</h1>
+<p>Ваши ответы не отправляются на сервер: всё считается в этом окне, результат вы скачиваете файлом и передаёте организатору. Фамилию вводить не нужно, только номер участника. Участие добровольное, прекратить можно в любой момент. Согласие (для несовершеннолетних — родителей) организатор получает до начала.</p>
+<div id="s0" class="card">
+<label>Номер участника (выдаёт организатор) <input id="pid" type="number" min="1" max="99"></label>
+<label>Сессия <select id="ses"><option value="1">1-я</option><option value="2">2-я</option></select></label>
+<label>Пачка (по файлу расписание.csv) <select id="pack"><option>A</option><option>B</option></select></label>
+<label>Условие (по файлу расписание.csv) <select id="cond"><option>вручную</option><option>с помощником</option></select></label>
+<p>Задача: найти документы с ошибками — нет подписи, визы или печати, дата в выходной или праздник, нарушен порядок дат согласования, дата в будущем. Для каждого документа выберите «Ошибка есть» или «Ошибок нет». Время засекается автоматически.</p>
+<button id="go">Начать</button></div>
+<div id="s1" hidden><div class="card">Время: <span id="timer">0:00</span> · Документ <span id="n"></span> из 20</div>
+<div id="help" class="card" hidden>Условие «с помощником»: откройте <a id="hl" target="_blank">отчёты помощника (PDF)</a> и сверяйте по номеру документа.</div>
+<img id="doc" alt="Проверяемый документ"><div class="card">
+<label><input type="radio" name="a" value="1"> Ошибка есть</label><label><input type="radio" name="a" value="0"> Ошибок нет</label>
+<button id="nx">Далее</button> <button id="pv" style="background:#666">Назад</button></div></div>
+<div id="s2" hidden class="card"><h2>Опросник NASA-TLX</h2><p>Оцените от 0 (очень низко) до 100 (очень высоко); «успешность»: 0 — идеально, 100 — провал.</p><div id="tlx"></div>
+<button id="fin">Завершить и скачать результат</button><p id="msg"></p></div>
+<script>
+var N=20,T=['умственная','физическая','временная','успешность','усилия','раздражение'];
+var Q={умственная:'Умственная нагрузка',физическая:'Физическая нагрузка',временная:'Временная нагрузка',успешность:'Успешность (0 — идеально)',усилия:'Усилия',раздражение:'Раздражение, стресс'};
+var ans=[],i=0,t0=0,tick=null,secs=0,$=function(x){return document.getElementById(x)};
+$('tlx').innerHTML=T.map(function(k){return '<label>'+Q[k]+': <b id="v_'+k+'">50</b><input type="range" min="0" max="100" step="5" value="50" id="r_'+k+'" oninput="document.getElementById(\'v_'+k+'\').textContent=this.value" style="width:100%"></label>'}).join('');
+function nm(k){return $('pack').value+('0'+(k+1)).slice(-2)}
+function show(){$('n').textContent=i+1;$('doc').src='пачка_'+$('pack').value+'/'+nm(i)+'.jpg';var r=document.getElementsByName('a');for(var j=0;j<r.length;j++)r[j].checked=(ans[i]!==undefined&&String(ans[i])===r[j].value);$('nx').textContent=i==N-1?'Закончить пачку':'Далее'}
+function save(){var r=document.getElementsByName('a');for(var j=0;j<r.length;j++)if(r[j].checked)ans[i]=+r[j].value;return ans[i]!==undefined}
+$('go').onclick=function(){if(!$('pid').value){alert('Введите номер участника');return}
+ $('s0').hidden=true;$('s1').hidden=false;$('help').hidden=$('cond').value!='с помощником';$('hl').href='пачка_'+$('pack').value+'_отчёты_помощника.pdf';
+ t0=Date.now();tick=setInterval(function(){secs=Math.round((Date.now()-t0)/1000);$('timer').textContent=Math.floor(secs/60)+':'+('0'+secs%60).slice(-2)},500);show()};
+$('nx').onclick=function(){if(!save()){alert('Выберите ответ');return}if(i<N-1){i++;show()}else{clearInterval(tick);$('s1').hidden=true;$('s2').hidden=false}};
+$('pv').onclick=function(){save();if(i>0){i--;show()}};
+function csv(rows){return '﻿'+rows.map(function(r){return r.join(';')}).join('\r\n')+'\r\n'}
+function dl(name,text){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8'}));a.download=name;a.click()}
+$('fin').onclick=function(){var p=$('pid').value,k=$('pack').value,c=$('cond').value,id='уч'+p+'_сессия'+$('ses').value;
+ dl(id+'_ответы.csv',csv([['участник','пачка','условие','документ','ответ_ошибка_есть']].concat(ans.map(function(a,j){return [p,k,c,nm(j),a]}))));
+ dl(id+'_сессия.csv',csv([['участник','пачка','условие','время_сек'].concat(T.map(function(x){return 'tlx_'+x}))].concat([[p,k,c,secs].concat(T.map(function(x){return $('r_'+x).value}))])));
+ $('msg').textContent='Скачаны два файла. Отправьте их организатору.'};
+</script></body></html>

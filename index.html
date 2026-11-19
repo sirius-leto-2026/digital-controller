@@ -1,0 +1,35 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Цифровой контролёр</title><style>
+:root{--bg:#f4f6f9;--card:#fff;--ink:#1b2330;--muted:#556070;--brand:#1f3a5f;--acc:#e08a1e}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Segoe UI",system-ui,Arial,sans-serif}
+header{background:var(--brand);color:#fff;border-bottom:4px solid var(--acc);padding:18px 16px}
+header h1{margin:0;font-size:1.7rem}header p{margin:4px 0 0;color:#d7e1ee}
+main{max-width:980px;margin:0 auto;padding:16px}.card{background:var(--card);border:1px solid #d9dee6;border-radius:10px;padding:18px;margin:16px 0}
+h2{color:var(--brand);margin-top:0}img{max-width:100%;height:auto;border:1px solid #d9dee6;border-radius:6px}
+a{color:var(--brand)}a:focus-visible{outline:3px solid #2563eb}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.note{color:var(--muted);font-size:.92rem}footer{max-width:980px;margin:0 auto;padding:8px 16px 32px;color:var(--muted);font-size:.9rem}
+</style></head><body>
+<header><h1>Цифровой контролёр</h1><p>Помощник, который проверяет подписи, визы, печати и даты в документах по шаблону бланка</p></header>
+<main>
+<section class="card"><h2>Как это выглядит</h2><img src="img/демо.gif" alt="Анимация: загрузка документа, красные и зелёные рамки на найденных элементах, проверка пачки, редактор бланков, Telegram-бот" width="960" height="720"></section>
+<section class="card"><h2>Как это работает</h2><ol>
+<li><b>Выравнивание</b> по четырём чёрным меткам в углах листа.</li>
+<li><b>Зоны бланка</b>: где стоят подпись, визы, печать и даты (размечаются один раз).</li>
+<li><b>Подпись, виза, печать</b>: из зоны вычитается пустой бланк и считается доля «чернил»; печать — по синему цвету.</li>
+<li><b>Даты</b>: чтение печатной даты, проверка выходных и праздников РФ, порядка дат и даты в будущем.</li>
+<li><b>Ответ</b>: картинка с рамками и список замечаний — на веб-странице или в Telegram-боте.</li></ol></section>
+<section class="card"><h2>Результаты (на синтетических документах)</h2>
+<p>200 документов: подпись, виза и печать найдены без ошибок (Precision = Recall = 1,00), даты прочитаны верно в 98,5 % случаев, около 0,6 с на документ на обычном ноутбуке.</p>
+<div class="grid"><img src="img/01_метрики_качества.png" alt="Столбчатая диаграмма метрик качества: F1 для подписи, визы, печати, доля верно прочитанных дат" loading="lazy">
+<img src="img/06_пилот_без_людей.png" alt="Пилот без участия людей: из 20 документов с ошибками найдено 20, пропусков и ложных тревог нет" loading="lazy"></div>
+<p class="note">Все документы синтетические (вымышленная организация). Эксперимент с людьми ещё не проведён; пилот выполнен без участия людей. Подлинность подписи не проверяется.</p></section>
+<section class="card"><h2>Скриншоты</h2><div class="grid">
+<img src="img/02_проверка_акт_с_ошибками.png" alt="Веб-интерфейс: акт с замечанием «дата в выходной день», таблица реквизитов" loading="lazy">
+<img src="img/07_редактор_бланков.png" alt="Редактор бланков: разметка зон подписи, виз и дат на пустом бланке" loading="lazy">
+<img src="img/telegram.png" alt="Ответ Telegram-бота: акт приёмки работ, замечаний нет, найдены подписи и печать, время 0,5 с" loading="lazy"></div></section>
+<section class="card"><h2>Эксперимент</h2><p>Онлайн-форма для добровольцев: <a href="experiment/">открыть форму</a>. Ответы не отправляются на сервер — участник скачивает файл и передаёт его организатору.</p></section>
+<section class="card"><h2>Запуск проверки</h2><p>Сама проверка работает на Python на компьютере команды (веб-интерфейс и Telegram-бот), поэтому эта страница — витрина проекта. Код и инструкция — в репозитории проекта.</p></section>
+</main>
+<footer>Проект «Цифровой контролёр», «Сириус.Лето» 2026/27. Организатор: команда проекта «Сириус.Лето». Сайт не использует cookie, аналитику и сторонние скрипты.<br>
+<a href="privacy.html">Политика конфиденциальности</a> · <a href="terms.html">Условия использования</a></footer>
+</body></html>
