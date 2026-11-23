@@ -1,35 +1,179 @@
-<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Цифровой контролёр</title><style>
-:root{--bg:#f4f6f9;--card:#fff;--ink:#1b2330;--muted:#556070;--brand:#1f3a5f;--acc:#e08a1e}
+﻿<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Цифровой контролёр — проверка документов по бланку</title>
+<meta name="description" content="Учебный проект «Сириус.Лето»: помощник находит в актах пропущенные подписи, визы, печати и ошибки в датах по шаблону бланка и показывает замечания с рамками.">
+<link rel="canonical" href="https://sirius-leto-2026.github.io/digital-controller/">
+<meta name="theme-color" content="#1f3a5f">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:site_name" content="Цифровой контролёр">
+<meta property="og:title" content="Цифровой контролёр — проверка документов по бланку">
+<meta property="og:description" content="Учебный проект «Сириус.Лето»: помощник находит в актах пропущенные подписи, визы, печати и ошибки в датах по шаблону бланка и показывает замечания с рамками.">
+<meta property="og:url" content="https://sirius-leto-2026.github.io/digital-controller/">
+<meta property="og:image" content="https://sirius-leto-2026.github.io/digital-controller/img/%D0%BE%D0%B1%D0%BB%D0%BE%D0%B6%D0%BA%D0%B0.jpg">
+<meta property="og:image:width" content="1600">
+<meta property="og:image:height" content="900">
+<meta property="og:image:alt" content="Обложка проекта «Цифровой контролёр»: акт с рамками подписи, визы и печати и веб-интерфейс проверки">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+:root{--bg:#f4f6f9;--card:#fff;--ink:#1b2330;--muted:#556070;--brand:#1f3a5f;--brand-2:#2b4f7d;--acc:#e08a1e;--line:#d9dee6;--focus:#2563eb}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Segoe UI",system-ui,Arial,sans-serif}
-header{background:var(--brand);color:#fff;border-bottom:4px solid var(--acc);padding:18px 16px}
-header h1{margin:0;font-size:1.7rem}header p{margin:4px 0 0;color:#d7e1ee}
-main{max-width:980px;margin:0 auto;padding:16px}.card{background:var(--card);border:1px solid #d9dee6;border-radius:10px;padding:18px;margin:16px 0}
-h2{color:var(--brand);margin-top:0}img{max-width:100%;height:auto;border:1px solid #d9dee6;border-radius:6px}
-a{color:var(--brand)}a:focus-visible{outline:3px solid #2563eb}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
-.note{color:var(--muted);font-size:.92rem}footer{max-width:980px;margin:0 auto;padding:8px 16px 32px;color:var(--muted);font-size:.9rem}
-</style></head><body>
-<header><h1>Цифровой контролёр</h1><p>Помощник, который проверяет подписи, визы, печати и даты в документах по шаблону бланка</p></header>
-<main>
-<section class="card"><h2>Как это выглядит</h2><img src="img/демо.gif" alt="Анимация: загрузка документа, красные и зелёные рамки на найденных элементах, проверка пачки, редактор бланков, Telegram-бот" width="960" height="720"></section>
-<section class="card"><h2>Как это работает</h2><ol>
+a{color:var(--brand)}
+a:focus-visible,button:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.skip{position:absolute;top:0;left:0;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;background:#fff;color:var(--brand);z-index:10}
+.skip:focus{width:auto;height:auto;overflow:visible;clip-path:none;padding:10px 14px;border-radius:0 0 8px 0}
+header{background:var(--brand);color:#fff;border-bottom:4px solid var(--acc);padding:22px 16px}
+header .wrap{max-width:980px;margin:0 auto}
+.eyebrow{margin:0 0 4px;color:#c3d3e6;font-size:.85rem;letter-spacing:.04em;text-transform:uppercase}
+header h1{margin:0;font-size:clamp(1.6rem,4vw,2.1rem);line-height:1.2}
+header p.lede{margin:6px 0 0;color:#d7e1ee;max-width:62ch}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 0}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 16px;border-radius:8px;background:var(--acc);color:#1b2330;font-weight:600;text-decoration:none;border:1px solid var(--acc)}
+.btn:hover{filter:brightness(1.06)}
+.btn.ghost{background:transparent;color:#fff;border-color:#8ba3c2}
+.btn.ghost:hover{background:rgba(255,255,255,.08);filter:none}
+main{max-width:980px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px;margin:16px 0}
+h2{color:var(--brand);margin:0 0 10px;font-size:1.35rem;line-height:1.3}
+section{scroll-margin-top:12px}
+img{max-width:100%;height:auto;border:1px solid var(--line);border-radius:6px;background:#fff}
+figure{margin:14px 0 0}
+figure img{display:block;width:100%}
+figcaption{color:var(--muted);font-size:.9rem;margin-top:6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;align-items:start}
+.grid figure{margin:0}
+.zoom{font-size:.88rem}
+.play{display:inline-flex;align-items:center;gap:6px;margin-top:10px;min-height:40px;padding:8px 12px;border:1px solid var(--brand);border-radius:8px;background:#fff;color:var(--brand);font-weight:600;text-decoration:none}
+.play:hover{background:#eef2f7}
+dl.stack{display:grid;grid-template-columns:minmax(160px,220px) 1fr;gap:8px 18px;margin:0}
+dl.stack dt{font-weight:600;color:var(--brand)}
+dl.stack dd{margin:0}
+footer{max-width:980px;margin:0 auto;padding:8px 16px 32px;color:var(--muted);font-size:.9rem}
+footer p{margin:0 0 6px}
+.note{color:var(--muted);font-size:.92rem}
+@media (max-width:560px){dl.stack{grid-template-columns:1fr;gap:2px}dl.stack dd{margin-bottom:10px}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Перейти к содержанию</a>
+<header>
+<div class="wrap">
+<p class="eyebrow">Учебный проект «Сириус.Лето» 2026/27</p>
+<h1>Цифровой контролёр</h1>
+<p class="lede">Помощник, который проверяет подписи, визы, печати и даты в документах по шаблону бланка</p>
+<p class="actions"><a class="btn" href="#experiment">Пройти эксперимент</a> <a class="btn ghost" href="#how">Как это работает</a></p>
+</div>
+</header>
+<main id="main">
+<section class="card" id="problem">
+<h2>Проблема</h2>
+<p>В актах и других бланках ошибки типовые: нет подписи, визы или печати, дата стоит в выходной или праздник, нарушен порядок дат согласования, дата ушла в будущее. Проверять это вручную по каждому документу долго, а на длинной пачке внимание притупляется.</p>
+<p>«Цифровой контролёр» размечает бланк один раз и дальше проверяет документы автоматически: показывает лист с рамками найденных элементов и список замечаний.</p>
+</section>
+<section class="card" id="how">
+<h2>Как работает контролёр</h2>
+<figure class="demo">
+<img id="demo" src="img/demo-poster.jpg" data-gif="img/демо.gif" width="960" height="720" fetchpriority="high" decoding="async" alt="Первый кадр демонстрации: акт с рамками подписи, визы и печати и веб-интерфейс с замечанием о дате в выходной день">
+<a class="play" id="demo-play" href="img/демо.gif">▶ Показать анимацию (GIF, 572 КБ)</a>
+<figcaption>Демонстрация: загрузка документа, красные и зелёные рамки на найденных элементах, проверка пачки, редактор бланков, Telegram-бот. Пока показан первый кадр — анимация загрузится только по нажатию.</figcaption>
+</figure>
+<ol>
 <li><b>Выравнивание</b> по четырём чёрным меткам в углах листа.</li>
 <li><b>Зоны бланка</b>: где стоят подпись, визы, печать и даты (размечаются один раз).</li>
 <li><b>Подпись, виза, печать</b>: из зоны вычитается пустой бланк и считается доля «чернил»; печать — по синему цвету.</li>
 <li><b>Даты</b>: чтение печатной даты, проверка выходных и праздников РФ, порядка дат и даты в будущем.</li>
-<li><b>Ответ</b>: картинка с рамками и список замечаний — на веб-странице или в Telegram-боте.</li></ol></section>
-<section class="card"><h2>Результаты (на синтетических документах)</h2>
+<li><b>Ответ</b>: картинка с рамками и список замечаний — на веб-странице или в Telegram-боте.</li>
+</ol>
+</section>
+<section class="card" id="experiment">
+<h2>Эксперимент</h2>
+<p>Онлайн-форма для добровольцев: 20 документов пачки A или B. Для каждого документа нужно отметить «ошибка есть» или «ошибок нет», затем заполнить опрос NASA-TLX и скачать два CSV — с ответами, а также с временем и оценками нагрузки.</p>
+<p class="actions"><a class="btn" href="experiment/">Открыть форму эксперимента</a></p>
+<p class="note">Ответы не отправляются на сервер — файлы вы передаёте организатору сами. Прогресс сохраняется в браузере: можно закрыть вкладку и вернуться к тому же документу.</p>
+</section>
+<section class="card" id="results">
+<h2>Результаты (на синтетических документах)</h2>
 <p>200 документов: подпись, виза и печать найдены без ошибок (Precision = Recall = 1,00), даты прочитаны верно в 98,5 % случаев, около 0,6 с на документ на обычном ноутбуке.</p>
-<div class="grid"><img src="img/01_метрики_качества.png" alt="Столбчатая диаграмма метрик качества: F1 для подписи, визы, печати, доля верно прочитанных дат" loading="lazy">
-<img src="img/06_пилот_без_людей.png" alt="Пилот без участия людей: из 20 документов с ошибками найдено 20, пропусков и ложных тревог нет" loading="lazy"></div>
-<p class="note">Все документы синтетические (вымышленная организация). Эксперимент с людьми ещё не проведён; пилот выполнен без участия людей. Подлинность подписи не проверяется.</p></section>
-<section class="card"><h2>Скриншоты</h2><div class="grid">
-<img src="img/02_проверка_акт_с_ошибками.png" alt="Веб-интерфейс: акт с замечанием «дата в выходной день», таблица реквизитов" loading="lazy">
-<img src="img/07_редактор_бланков.png" alt="Редактор бланков: разметка зон подписи, виз и дат на пустом бланке" loading="lazy">
-<img src="img/telegram.png" alt="Ответ Telegram-бота: акт приёмки работ, замечаний нет, найдены подписи и печать, время 0,5 с" loading="lazy"></div></section>
-<section class="card"><h2>Эксперимент</h2><p>Онлайн-форма для добровольцев: <a href="experiment/">открыть форму</a>. Ответы не отправляются на сервер — участник скачивает файл и передаёт его организатору.</p></section>
-<section class="card"><h2>Запуск проверки</h2><p>Сама проверка работает на Python на компьютере команды (веб-интерфейс и Telegram-бот), поэтому эта страница — витрина проекта. Код и инструкция — в репозитории проекта.</p></section>
+<div class="grid">
+<figure>
+<img src="img/01_метрики_качества.png" width="1700" height="782" loading="lazy" decoding="async" alt="Столбчатая диаграмма метрик качества: F1 для подписи, визы, печати, доля верно прочитанных дат">
+<figcaption>Метрики на синтетических документах: сканы (200 док.) и фото с телефона (100 док.). <a class="zoom" href="img/01_метрики_качества.png" aria-label="Открыть график метрик качества в полном размере">Открыть полностью</a></figcaption>
+</figure>
+<figure>
+<img src="img/06_пилот_без_людей.png" width="1360" height="646" loading="lazy" decoding="async" alt="Пилот без участия людей: из 20 документов с ошибками найдено 20, пропусков и ложных тревог нет">
+<figcaption>Пилот без участия людей: 20 документов с ошибками — найдено 20, пропусков и ложных тревог нет. <a class="zoom" href="img/06_пилот_без_людей.png" aria-label="Открыть график пилота в полном размере">Открыть полностью</a></figcaption>
+</figure>
+</div>
+<p class="note">Все документы синтетические (вымышленная организация). Эксперимент с людьми ещё не проведён; пилот выполнен без участия людей. Подлинность подписи не проверяется.</p>
+</section>
+<section class="card" id="screenshots">
+<h2>Скриншоты</h2>
+<div class="grid">
+<figure>
+<img src="img/02_проверка_акт_с_ошибками.png" width="1400" height="1900" loading="lazy" decoding="async" alt="Веб-интерфейс: акт с замечанием «дата в выходной день», таблица реквизитов">
+<figcaption>Проверка акта: замечание «дата в выходной день» и таблица реквизитов. <a class="zoom" href="img/02_проверка_акт_с_ошибками.png" aria-label="Открыть скриншот проверки акта в полном размере">Открыть полностью</a></figcaption>
+</figure>
+<figure>
+<img src="img/07_редактор_бланков.png" width="1400" height="1300" loading="lazy" decoding="async" alt="Редактор бланков: разметка зон подписи, виз и дат на пустом бланке">
+<figcaption>Редактор бланков: разметка зон подписи, виз и дат на пустом бланке. <a class="zoom" href="img/07_редактор_бланков.png" aria-label="Открыть скриншот редактора бланков в полном размере">Открыть полностью</a></figcaption>
+</figure>
+<figure>
+<img src="img/telegram.png" width="438" height="701" loading="lazy" decoding="async" alt="Ответ Telegram-бота: акт приёмки работ, замечаний нет, найдены подписи и печать, время 0,5 с">
+<figcaption>Ответ Telegram-бота: замечаний нет, подписи и печать найдены. <a class="zoom" href="img/telegram.png" aria-label="Открыть скриншот ответа Telegram-бота в полном размере">Открыть полностью</a></figcaption>
+</figure>
+</div>
+</section>
+<section class="card" id="stack">
+<h2>Стек</h2>
+<dl class="stack">
+<dt>Проверка документов</dt>
+<dd>Python: веб-интерфейс и Telegram-бот работают на компьютере команды.</dd>
+<dt>Сайт</dt>
+<dd>Статические HTML, CSS и JavaScript без сборки и сторонних скриптов — открывается на GitHub Pages.</dd>
+<dt>Отчёты помощника</dt>
+<dd>PDF с результатами проверки — по одному на пачку A и B эксперимента.</dd>
+<dt>Данные</dt>
+<dd>Синтетические документы вымышленной организации; ответы эксперимента не отправляются на сервер.</dd>
+</dl>
+</section>
+<section class="card" id="run">
+<h2>Запуск проверки</h2>
+<p>Эта страница — витрина проекта. Сама проверка работает на Python на компьютере команды: через веб-интерфейс или Telegram-бота. Поэтому здесь нельзя загрузить свой документ — проверка запускается в среде команды.</p>
+</section>
 </main>
-<footer>Проект «Цифровой контролёр», «Сириус.Лето» 2026/27. Организатор: команда проекта «Сириус.Лето». Сайт не использует cookie, аналитику и сторонние скрипты.<br>
-<a href="privacy.html">Политика конфиденциальности</a> · <a href="terms.html">Условия использования</a></footer>
-</body></html>
+<footer>
+<p>Проект «Цифровой контролёр», «Сириус.Лето» 2026/27. Организатор: команда проекта «Сириус.Лето». Сайт не использует cookie, аналитику и сторонние скрипты.</p>
+<p><a href="privacy.html">Политика конфиденциальности</a> · <a href="terms.html">Условия использования</a> · <a href="https://github.com/sirius-leto-2026/digital-controller">Исходники сайта на GitHub</a></p>
+</footer>
+<script>
+(function(){
+  var img=document.getElementById('demo'), a=document.getElementById('demo-play');
+  if(!img||!a) return;
+  a.addEventListener('click',function(e){
+    if(!img.getAttribute('data-gif')) return;
+    e.preventDefault();
+    a.setAttribute('aria-busy','true');
+    a.textContent='Загружаем анимацию…';
+    var gif=img.getAttribute('data-gif'), probe=new Image();
+    probe.onload=function(){
+      img.src=gif;
+      img.removeAttribute('data-gif');
+      a.hidden=true;
+    };
+    probe.onerror=function(){
+      a.removeAttribute('aria-busy');
+      a.textContent='Анимация не загрузилась — откройте GIF отдельно';
+    };
+    probe.src=gif;
+  });
+})();
+</script>
+</body>
+</html>
